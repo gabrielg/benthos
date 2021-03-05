@@ -275,17 +275,6 @@ func New(
 		t.plugins[k] = nil
 	}
 
-	for k, conf := range conf.Inputs {
-		newInput, err := input.New(conf, t, log.NewModule(".resource.input."+k), metrics.Namespaced(stats, "resource.input."+k))
-		if err != nil {
-			return nil, fmt.Errorf(
-				"failed to create input resource '%v' of type '%v': %v",
-				k, conf.Type, err,
-			)
-		}
-		t.inputs[k] = newInput
-	}
-
 	for k, conf := range conf.Caches {
 		newCache, err := cache.New(conf, t, log.NewModule(".resource.cache."+k), metrics.Namespaced(stats, "resource.cache."+k))
 		if err != nil {
@@ -295,6 +284,17 @@ func New(
 			)
 		}
 		t.caches[k] = newCache
+	}
+
+	for k, conf := range conf.Inputs {
+		newInput, err := input.New(conf, t, log.NewModule(".resource.input."+k), metrics.Namespaced(stats, "resource.input."+k))
+		if err != nil {
+			return nil, fmt.Errorf(
+				"failed to create input resource '%v' of type '%v': %v",
+				k, conf.Type, err,
+			)
+		}
+		t.inputs[k] = newInput
 	}
 
 	// TODO: Prevent recursive conditions.
